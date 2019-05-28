@@ -1,6 +1,6 @@
-# packer-archlinux
+# Packer: Arch Linux
 
-The repository that backs the Arch Linux machines found on Vagrant Cloud at
+This repository backs Arch Linux machines on Vagrant Cloud. They can be found at
 https://app.vagrantup.com/webdavis
 
 _The 1st version of this repository will be released soon..._
