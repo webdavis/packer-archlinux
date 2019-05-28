@@ -1,0 +1,64 @@
+{
+  "variables": {
+    "iso_checksum_url": "http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
+    "iso_checksum_type": "md5",
+    "iso_url1": "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-2019.01.01-x86_64.iso",
+    "iso_url2": "http://mirrors.evowise.com/archlinux/iso/latest/archlinux-2019.01.01-x86_64.iso",
+    "iso_url3": "http://mirrors.edge.kernel.org/archlinux/iso/latest/archlinux-2019.01.01-x86_64.iso",
+    "disk_size": "51200",
+    "memory": "1024",
+    "cpus": "1"
+  },
+  "builders": [{
+    "type": "qemu",
+    "iso_checksum_url": "{{user `iso_checksum_url`}}",
+    "iso_checksum_type": "{{user `iso_checksum_type`}}",
+    "iso_urls": [
+      "{{user `iso_url1`}}",
+      "{{user `iso_url2`}}",
+      "{{user `iso_url3`}}"
+    ],
+    "disk_size": "{{user `disk_size`}}",
+    "qemuargs": [
+      ["-m", "{{user `memory`}}"],
+      ["-smp", "{{user `cpus`}}"]
+    ],
+    "http_directory": "http",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_port": 22,
+    "ssh_wait_timeout": "7200s",
+    "headless": true,
+    "shutdown_command": "sudo systemctl poweroff",
+    "boot_wait": "60s",
+    "boot_command": [
+      "<enter><wait50><enter><enter>",
+      "curl -O 'http://{{.HTTPIP}}:{{.HTTPPort}}/{preinstall,chroot-vagrant,umount}.bash'<enter><wait>",
+      "/bin/bash preinstall.bash < chroot-vagrant.bash && /bin/bash umount.bash && systemctl reboot<enter>"
+    ]
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/postinstall.bash",
+        "scripts/qemu-guest.bash",
+        "scripts/cleanup.bash"
+      ],
+      "execute_command": "echo 'vagrant' | sudo --stdin bash '{{.Path}}'"
+    }
+  ],
+  "post-processors": [[
+    {
+      "type": "vagrant",
+      "keep_input_artifact": false,
+      "output": "Arch-Linux-x86_64-{{.Provider}}-{{isotime \"2006-01-02\"}}.box"
+    },
+    {
+      "type": "vagrant-cloud",
+      "access_token": "zX58KZvBmdctpQ.atlasv1.wNkJfbXUdys3qodQ8vpCgTwb6zcyWw2tzPUPXbP5QDl4szUewaz0snwiY5hTNUaaCbw",
+      "box_tag": "webdavis/archlinux",
+      "version": "{{isotime \"2006.01.02\"}}"
+    }
+  ]]
+}

@@ -1,0 +1,8 @@
+{
+  "iso_url1": "iso/archlinux-2019.01.01-x86_64.iso",
+  "iso_checksum_url": "http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
+  "iso_checksum_type": "md5",
+  "disk_size": "51200",
+  "memory": "1024",
+  "cpus": "2"
+}

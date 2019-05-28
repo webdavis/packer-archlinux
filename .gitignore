@@ -1,0 +1,20 @@
+# Ignore Packer's cache directory.
+packer_cache/
+
+# Ignore the output directory for images.
+output-*
+
+# Ignore the directory where Vagrant stores its state.
+.vagrant/
+
+# Ignore the Vagrant boxes that are created.
+*.box
+
+# Ignore Vim swap files.
+*.sw*
+
+# Ignore Ansible's retry files.
+*.retry
+
+# Ignore logs.
+logs/

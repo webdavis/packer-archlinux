@@ -1,0 +1,54 @@
+{
+  "variables": {
+    "vm_name": "archlinux-lts-{{isotime \"2006.01.02\"}}.qcow2",
+    "iso_checksum_url": "http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
+    "iso_checksum_type": "md5",
+    "iso_url1": "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-2019.01.01-x86_64.iso",
+    "iso_url2": "http://mirrors.evowise.com/archlinux/iso/latest/archlinux-2019.01.01-x86_64.iso",
+    "iso_url3": "http://mirrors.edge.kernel.org/archlinux/iso/latest/archlinux-2019.01.01-x86_64.iso",
+    "disk_size": "51200",
+    "memory": "1024",
+    "cpus": "1",
+    "ssh_username": "localuser",
+    "ssh_password": "localuser",
+    "ssh_port": "22"
+  },
+  "builders": [{
+    "type": "qemu",
+    "vm_name": "{{user `vm_name`}}",
+    "iso_checksum_url": "{{user `iso_checksum_url`}}",
+    "iso_checksum_type": "{{user `iso_checksum_type`}}",
+    "iso_urls": [
+      "{{user `iso_url1`}}",
+      "{{user `iso_url2`}}",
+      "{{user `iso_url3`}}"
+    ],
+    "disk_size": "{{user `disk_size`}}",
+    "qemuargs": [
+      ["-m", "{{user `memory`}}"],
+      ["-smp", "{{user `cpus`}}"]
+    ],
+    "http_directory": "http",
+    "ssh_username": "{{user `ssh_username`}}",
+    "ssh_password": "{{user `ssh_password`}}",
+    "ssh_port": "{{user `ssh_port`}}",
+    "ssh_wait_timeout": "7200s",
+    "headless": true,
+    "shutdown_command": "sudo systemctl poweroff",
+    "boot_wait": "60s",
+    "boot_command": [
+      "<enter><wait50><enter><enter>",
+      "curl -O 'http://{{.HTTPIP}}:{{.HTTPPort}}/{preinstall-lts,chroot-lts-local,umount}.bash'<enter><wait>",
+      "/bin/bash preinstall-lts.bash < chroot-lts-local.bash && /bin/bash umount.bash && systemctl reboot<enter>"
+    ]
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "scripts": [
+      "scripts/postinstall.bash",
+      "scripts/qemu-guest.bash",
+      "scripts/cleanup.bash"
+    ],
+    "execute_command": "echo 'localuser' | sudo --stdin bash '{{.Path}}'"
+  }]
+}
